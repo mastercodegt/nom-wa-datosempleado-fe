@@ -18,7 +18,7 @@ export default function MonthlyTarget() {
 
   const series = [75.55];
   const options: ApexOptions = {
-    colors: ["#465FFF"],
+    colors: ["#FC3830"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "radialBar",
@@ -57,7 +57,7 @@ export default function MonthlyTarget() {
     },
     fill: {
       type: "solid",
-      colors: ["#465FFF"],
+      colors: ["#FC3830"],
     },
     stroke: {
       lineCap: "round",

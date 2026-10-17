@@ -3,7 +3,7 @@ import Chart from "react-apexcharts";
 
 export default function BarChartOne() {
   const options: ApexOptions = {
-    colors: ["#465fff"],
+    colors: ["#FC3830"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",

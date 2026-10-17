@@ -7,7 +7,7 @@ export default function CountryMap() {
       backgroundColor="transparent"
       markerStyle={{
         initial: {
-          fill: "#465FFF",
+          fill: "#FC3830",
           r: 4,
         },
       }}
@@ -17,7 +17,7 @@ export default function CountryMap() {
           coords: [37.2580397, -104.657039],
           name: "United States",
           style: {
-            fill: "#465FFF",
+            fill: "#FC3830",
             strokeWidth: 1,
             stroke: "#383f47",
           },
@@ -25,18 +25,18 @@ export default function CountryMap() {
         {
           coords: [20.7504374, 73.7276105],
           name: "India",
-          style: { fill: "#465FFF", strokeWidth: 1, stroke: "white" },
+          style: { fill: "#FC3830", strokeWidth: 1, stroke: "white" },
         },
         {
           coords: [53.613, -11.6368],
           name: "United Kingdom",
-          style: { fill: "#465FFF", strokeWidth: 1, stroke: "white" },
+          style: { fill: "#FC3830", strokeWidth: 1, stroke: "white" },
         },
         {
           coords: [-25.0304388, 115.2092761],
           name: "Sweden",
           style: {
-            fill: "#465FFF",
+            fill: "#FC3830",
             strokeWidth: 1,
             stroke: "white",
             strokeOpacity: 0,
@@ -61,11 +61,11 @@ export default function CountryMap() {
         hover: {
           fillOpacity: 0.7,
           cursor: "pointer",
-          fill: "#465fff",
+          fill: "#FC3830",
           stroke: "none",
         },
         selected: {
-          fill: "#465FFF",
+          fill: "#FC3830",
         },
         selectedHover: {},
       }}

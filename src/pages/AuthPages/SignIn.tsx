@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Iniciar sesión | TailAdmin"
-        description="Accede a tu panel de administración de TailAdmin."
+        title="Iniciar sesión | Toyota"
+        description="Accede al panel de administración de Toyota."
       />
       <AuthLayout>
         <SignInForm />

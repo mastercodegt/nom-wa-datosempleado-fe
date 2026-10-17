@@ -32,7 +32,7 @@ export default function MonthlySalesChart() {
   const [isOpen, setIsOpen] = useState(false);
 
   const options: ApexOptions = {
-    colors: ["#465fff"],
+    colors: ["#FC3830"],
     chart: {
       fontFamily: "Outfit, sans-serif",
       type: "bar",

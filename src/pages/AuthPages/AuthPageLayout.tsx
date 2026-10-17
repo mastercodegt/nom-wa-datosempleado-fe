@@ -1,7 +1,6 @@
 import GridShape from "@/components/common/GridShape";
 import ThemeTogglerTwo from "@/components/common/ThemeTogglerTwo";
 import React from "react";
-import { Link } from "react-router";
 
 export default function AuthLayout({
   children,
@@ -9,33 +8,20 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative z-1 bg-white p-6 sm:p-0 dark:bg-gray-900">
-      <div className="relative flex h-screen w-full flex-col justify-center sm:p-0 lg:flex-row dark:bg-gray-900">
-        {children}
-        <div className="relative hidden h-full w-full items-center overflow-hidden bg-gray-900 lg:grid lg:w-1/2">
-          <img
-            src="/images/grid-image/image-01.png"
-            alt="Edificio moderno de oficinas"
-            className="absolute inset-0 size-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gray-950/65" />
+    <div className="relative z-1 min-h-screen overflow-hidden bg-gray-900">
+      <img
+        src="/images/signin/image.png"
+        alt=""
+        className="absolute inset-0 size-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gray-950/55" />
+      <div className="relative flex min-h-screen w-full flex-col justify-center sm:p-0 lg:flex-row">
+        <div className="relative z-10 flex min-h-screen w-full flex-1 flex-col justify-center bg-white/87 px-6 backdrop-blur-sm sm:p-0 lg:w-1/2 lg:bg-white/80 dark:bg-gray-900/90">
+          {children}
+        </div>
+        <div className="relative hidden h-full w-full items-center overflow-hidden lg:grid lg:w-1/2">
           <div className="relative z-1 flex items-center justify-center">
             <GridShape />
-
-            <div className="flex max-w-xs flex-col items-center">
-              <Link to="/" className="mb-4 block">
-                <img
-                  width={231}
-                  height={48}
-                  src="/images/logo/auth-logo.svg"
-                  alt="Logo"
-                />
-              </Link>
-
-              <p className="text-center text-white/80">
-                Una plataforma de administración clara y eficiente
-              </p>
-            </div>
           </div>
         </div>
 
