@@ -47,7 +47,7 @@
       "transactions": "Transactions",
       "singleTransaction": "Single Transaction",
       "calendar": "Calendar",
-      "userProfile": "User Profile",
+      "colaboradores": "Colaboradores",
       "task": "Task",
       "taskList": "List",
       "kanban": "Kanban",
@@ -121,11 +121,6 @@
       "email": "Email",
       "inbox": "Inbox",
       "inboxDetails": "Details"
-    },
-    "widget": {
-      "title": "#1 Tailwind CSS Dashboard",
-      "description": "Leading Tailwind CSS Admin Template with 500+ UI Component and Pages.",
-      "purchasePlan": "Purchase Plan"
     }
   },
   "header": {
@@ -145,7 +140,7 @@
     "accountSettings": "Account settings",
     "support": "Support",
     "language": "Language",
-    "signOut": "Sign out"
+    "signOut": "Cerrar sesión"
   },
   "ecommerce": {
     "title": "E-commerce Dashboard",

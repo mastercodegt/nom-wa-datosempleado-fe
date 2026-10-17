@@ -1,7 +1,7 @@
 import { useSidebar } from "@/context/SidebarContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   BoxCubeIcon,
   CalenderIcon,
@@ -9,6 +9,7 @@ import {
   GridIcon,
   HorizontaLDots,
   ListIcon,
+  LogoutIcon,
   PageIcon,
   PieChartIcon,
   PlugInIcon,
@@ -16,7 +17,6 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { cn } from "../utils";
-import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
   name: string;
@@ -43,16 +43,10 @@ const navItems: NavItem[] = [
     subItems: [{ name: "Ecommerce", key: "ecommerceHome", path: "/" }],
   },
   {
-    icon: <CalenderIcon fontSize={24} />,
-    name: "Calendar",
-    key: "calendar",
-    path: "/calendar",
-  },
-  {
     icon: <UserCircleIcon fontSize={24} />,
-    name: "User Profile",
-    key: "userProfile",
-    path: "/profile",
+    name: "Colaboradores",
+    key: "colaboradores",
+    path: "/Colaboradores",
   },
   {
     name: "Forms",
@@ -67,25 +61,27 @@ const navItems: NavItem[] = [
       },
     ],
   },
-  {
-    name: "Tables",
-    key: "tables",
-    icon: <TableIcon fontSize={24} />,
-    subItems: [
-      {
-        name: "Basic Tables",
-        key: "basicTables",
-        path: "/basic-tables",
-        pro: false,
-      },
-    ],
-  },
-  {
-    name: "Pages",
-    key: "pages",
-    icon: <PageIcon fontSize={24} />,
-    subItems: [{ name: "Blank Page", key: "blankPage", path: "/blank" }],
-  },
+  /*
+{
+  name: "Tables",
+  key: "tables",
+  icon: <TableIcon fontSize={24} />,
+  subItems: [
+    {
+      name: "Basic Tables",
+      key: "basicTables",
+      path: "/basic-tables",
+      pro: false,
+    },
+  ],
+},
+{
+  name: "Pages",
+  key: "pages",
+  icon: <PageIcon fontSize={24} />,
+  subItems: [{ name: "Blank Page", key: "blankPage", path: "/blank" }],
+},
+*/
 ];
 
 const othersItems: NavItem[] = [
@@ -127,6 +123,7 @@ const AppSidebar: React.FC = () => {
     useSidebar();
   const { t } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
     index: number;
@@ -395,26 +392,26 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-
-            <div>
-              <h2
-                className={`mb-4 flex text-xs leading-5 text-gray-400 uppercase ${!isExpanded && !isHovered
-                  ? "xl:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  t("sidebar.groups.others")
-                ) : (
-                  <HorizontaLDots className="size-6" />
-                )}
-              </h2>
-              {renderMenuItems(othersItems, "others")}
-            </div>
           </div>
         </nav>
+      </div>
 
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
+      <div className="mt-auto shrink-0 border-t border-gray-200 py-4 dark:border-gray-800">
+        <button
+          type="button"
+          onClick={() => navigate("/signin")}
+          aria-label={t("userDropdown.signOut")}
+          title={!isExpanded && !isHovered && !isMobileOpen ? t("userDropdown.signOut") : undefined}
+          className={`group menu-item text-brand-600 transition-colors hover:bg-brand-50 hover:text-brand-700 dark:text-brand-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 ${!isExpanded && !isHovered && !isMobileOpen
+            ? "xl:justify-center"
+            : "justify-start"
+            }`}
+        >
+          <LogoutIcon className="size-5 shrink-0" />
+          {(isExpanded || isHovered || isMobileOpen) && (
+            <span className="menu-item-text">{t("userDropdown.signOut")}</span>
+          )}
+        </button>
       </div>
     </aside>
   );
