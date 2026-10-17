@@ -1,0 +1,137 @@
+[
+    {
+        "id_colaborador": 1,
+        "nombre": "Carlos",
+        "apellido": "Ramírez",
+        "direccion": "Zona 1, Ciudad de Guatemala",
+        "edad": 28,
+        "id_profesion": 1,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 2,
+        "nombre": "María",
+        "apellido": "López",
+        "direccion": "Zona 10, Ciudad de Guatemala",
+        "edad": 32,
+        "id_profesion": 2,
+        "id_estado_civil": 2
+    },
+    {
+        "id_colaborador": 3,
+        "nombre": "José",
+        "apellido": "Martínez",
+        "direccion": "Mixco, Guatemala",
+        "edad": 45,
+        "id_profesion": 3,
+        "id_estado_civil": 2
+    },
+    {
+        "id_colaborador": 4,
+        "nombre": "Ana",
+        "apellido": "García",
+        "direccion": "Villa Nueva, Guatemala",
+        "edad": 26,
+        "id_profesion": 4,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 5,
+        "nombre": "Luis",
+        "apellido": "Hernández",
+        "direccion": "Zona 15, Ciudad de Guatemala",
+        "edad": 38,
+        "id_profesion": 5,
+        "id_estado_civil": 3
+    },
+    {
+        "id_colaborador": 6,
+        "nombre": "Sofía",
+        "apellido": "Morales",
+        "direccion": "Antigua Guatemala, Sacatepéquez",
+        "edad": 29,
+        "id_profesion": 6,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 7,
+        "nombre": "Pedro",
+        "apellido": "Castillo",
+        "direccion": "Zona 7, Ciudad de Guatemala",
+        "edad": 41,
+        "id_profesion": 7,
+        "id_estado_civil": 2
+    },
+    {
+        "id_colaborador": 8,
+        "nombre": "Lucía",
+        "apellido": "Fernández",
+        "direccion": "Zona 14, Ciudad de Guatemala",
+        "edad": 25,
+        "id_profesion": 8,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 9,
+        "nombre": "Jorge",
+        "apellido": "Pérez",
+        "direccion": "Amatitlán, Guatemala",
+        "edad": 50,
+        "id_profesion": 9,
+        "id_estado_civil": 4
+    },
+    {
+        "id_colaborador": 10,
+        "nombre": "Daniela",
+        "apellido": "Vásquez",
+        "direccion": "Zona 11, Ciudad de Guatemala",
+        "edad": 27,
+        "id_profesion": 10,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 11,
+        "nombre": "Roberto",
+        "apellido": "Mendoza",
+        "direccion": "San Lucas Sacatepéquez",
+        "edad": 35,
+        "id_profesion": 1,
+        "id_estado_civil": 2
+    },
+    {
+        "id_colaborador": 12,
+        "nombre": "Gabriela",
+        "apellido": "Ruiz",
+        "direccion": "Zona 16, Ciudad de Guatemala",
+        "edad": 31,
+        "id_profesion": 2,
+        "id_estado_civil": 5
+    },
+    {
+        "id_colaborador": 13,
+        "nombre": "Fernando",
+        "apellido": "Ortiz",
+        "direccion": "Fraijanes, Guatemala",
+        "edad": 42,
+        "id_profesion": 3,
+        "id_estado_civil": 3
+    },
+    {
+        "id_colaborador": 14,
+        "nombre": "Valeria",
+        "apellido": "Sánchez",
+        "direccion": "Zona 12, Ciudad de Guatemala",
+        "edad": 24,
+        "id_profesion": 8,
+        "id_estado_civil": 1
+    },
+    {
+        "id_colaborador": 15,
+        "nombre": "Andrés",
+        "apellido": "Gómez",
+        "direccion": "Carretera a El Salvador, Guatemala",
+        "edad": 37,
+        "id_profesion": 7,
+        "id_estado_civil": 2
+    }
+]
