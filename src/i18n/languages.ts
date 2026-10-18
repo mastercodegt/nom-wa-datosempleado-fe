@@ -1,9 +1,9 @@
-import { UsFlagIcon } from "@/icons";
+import { EsFlagIcon } from "@/icons";
 import type React from "react";
 
-export const locales = ["en"] as const;
+export const locales = ["es"] as const;
 export type Locale = (typeof locales)[number];
-export const defaultLocale: Locale = "en";
+export const defaultLocale: Locale = "es";
 
 export interface Language {
   id: Locale;
@@ -16,11 +16,11 @@ export interface Language {
 
 export const languages: Language[] = [
   {
-    id: "en",
-    name: "English",
-    shortName: "English",
+    id: "es",
+    name: "Español",
+    shortName: "Español",
     dir: "ltr",
-    FlagIcon: UsFlagIcon,
+    FlagIcon: EsFlagIcon,
   },
   // {
   //   id: "ar",

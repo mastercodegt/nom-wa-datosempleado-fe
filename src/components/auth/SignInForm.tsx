@@ -9,25 +9,51 @@ import {
   EyeIcon,
   LockIcon,
 } from "@/icons";
-import { useState } from "react";
-import { Link } from "react-router";
+import { AuthService } from "@/services";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage("");
+
+    const formData = new FormData(event.currentTarget);
+    const correo = String(formData.get("correo") ?? "").trim();
+    const contraseña = String(formData.get("contraseña") ?? "");
+
+    try {
+      setIsSubmitting(true);
+      const passwordBytes = new TextEncoder().encode(contraseña);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", passwordBytes);
+      const contraseñaSha256 = Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+
+      await AuthService.iniciarSesion(correo, contraseñaSha256);
+      navigate("/");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "No fue posible iniciar sesión. Inténtalo de nuevo.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-1 flex-col">
 
 
-      <div className="mx-auto w-full max-w-md pt-10">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-        >
-          <ChevronLeftIcon className="size-5 rtl:rotate-180" />
-          Volver al panel
-        </Link>
-      </div>
+
 
 
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
@@ -46,7 +72,7 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <Label>
@@ -57,9 +83,10 @@ export default function SignInForm() {
                     <Input
                       type="email"
                       id="email"
-                      name="email"
+                      name="correo"
                       autoComplete="email"
                       placeholder="nombre@empresa.com"
+                      required
                       className="h-12 rounded-xl border-gray-200 bg-white/95 ps-11 text-gray-900 shadow-sm transition placeholder:text-gray-400 focus:border-brand-500 focus:ring-brand-500/15 dark:border-gray-700 dark:bg-gray-900/85 dark:text-white"
                     />
                   </div>
@@ -73,9 +100,10 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       id="password"
-                      name="password"
+                      name="contraseña"
                       autoComplete="current-password"
                       placeholder="Escribe tu contraseña"
+                      required
                       className="h-12 rounded-xl border-gray-200 bg-white/95 ps-11 pe-12 text-gray-900 shadow-sm transition placeholder:text-gray-400 focus:border-brand-500 focus:ring-brand-500/15 dark:border-gray-700 dark:bg-gray-900/85 dark:text-white"
                     />
                     <button
@@ -106,9 +134,14 @@ export default function SignInForm() {
                     ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
+                {errorMessage && (
+                  <p className="text-sm text-error-600" role="alert">
+                    {errorMessage}
+                  </p>
+                )}
                 <div>
-                  <Button className="w-full" size="sm">
-                    Iniciar sesión
+                  <Button className="w-full" size="sm" disabled={isSubmitting}>
+                    {isSubmitting ? "Validando..." : "Iniciar sesión"}
                   </Button>
                 </div>
               </div>

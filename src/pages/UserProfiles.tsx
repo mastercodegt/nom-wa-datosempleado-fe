@@ -1,9 +1,9 @@
 import { Modal } from "@/components/ui/modal";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import colaboradores from "@/data/colaboradores.json";
 import { useModal } from "@/hooks/useModal";
-import { SearchIcon } from "@/icons";
-import { useMemo, useState } from "react";
+import { RegenerateIcon, SearchIcon } from "@/icons";
+import { ColaboradorService, type Colaborador } from "@/services";
+import { useEffect, useMemo, useState } from "react";
 import {
   DetailsList,
   DetailsListLayoutMode,
@@ -14,26 +14,45 @@ import {
   type IRenderFunction,
 } from "@fluentui/react";
 
-type Colaborador = {
-  id_colaborador: number;
-  nombre: string;
-  apellido: string;
-  direccion: string;
-  edad: number;
-  id_profesion: number;
-  id_estado_civil: number;
+type AgeColorStatus = {
+  color: "none" | "yellow" | "red";
+  range: string;
+  meaning: string;
+  rowClass: string;
 };
 
-type SortState = {
-  key: keyof Colaborador;
-  descending: boolean;
-};
+function getAgeColorStatus(age: number): AgeColorStatus {
+  if (age >= 51) {
+    return {
+      color: "red",
+      range: "51 años o más",
+      meaning: "Por favor quédese en casa.",
+      rowClass: "!bg-error-50 dark:!bg-error-500/15",
+    };
+  }
+
+  if (age >= 26) {
+    return {
+      color: "yellow",
+      range: "26 a 50 años",
+      meaning: "Tenga cuidado y tome todas las medidas de prevención.",
+      rowClass: "!bg-warning-50 dark:!bg-warning-500/15",
+    };
+  }
+
+  return {
+    color: "none",
+    range: "18 a 25 años",
+    meaning: "Fuera de peligro; no requiere color de alerta.",
+    rowClass: "",
+  };
+}
 
 const initialColumns: IColumn[] = [
   {
-    key: "id_colaborador",
+    key: "id",
     name: "ID",
-    fieldName: "id_colaborador",
+    fieldName: "id",
     minWidth: 48,
     maxWidth: 64,
     isResizable: true,
@@ -71,19 +90,19 @@ const initialColumns: IColumn[] = [
     isResizable: true,
   },
   {
-    key: "id_profesion",
-    name: "ID profesión",
-    fieldName: "id_profesion",
-    minWidth: 80,
-    maxWidth: 104,
+    key: "profesionNombre",
+    name: "Profesión",
+    fieldName: "profesionNombre",
+    minWidth: 160,
+    maxWidth: 240,
     isResizable: true,
   },
   {
-    key: "id_estado_civil",
-    name: "ID estado civil",
-    fieldName: "id_estado_civil",
-    minWidth: 96,
-    maxWidth: 120,
+    key: "estadoCivilNombre",
+    name: "Estado civil",
+    fieldName: "estadoCivilNombre",
+    minWidth: 120,
+    maxWidth: 180,
     isResizable: true,
   },
 ];
@@ -93,10 +112,31 @@ export default function UserProfiles() {
   const [professionFilter, setProfessionFilter] = useState("");
   const [maritalStatusFilter, setMaritalStatusFilter] = useState("");
   const [columns, setColumns] = useState(initialColumns);
-  const [sort, setSort] = useState<SortState | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<Colaborador | null>(null);
+  const [colaboradorData, setColaboradorData] = useState<Colaborador[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
-  const colaboradorData = colaboradores as Colaborador[];
+
+  useEffect(() => {
+    let isMounted = true;
+
+    ColaboradorService.obtenerTodos()
+      .then((data) => {
+        if (isMounted) setColaboradorData(data);
+      })
+      .catch(() => {
+        if (isMounted) setLoadError("No fue posible cargar los colaboradores.");
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const filteredItems = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase("es");
@@ -109,45 +149,27 @@ export default function UserProfiles() {
             String(value).toLocaleLowerCase("es").includes(normalizedSearch),
           );
         const matchesProfession =
-          !professionFilter || String(item.id_profesion) === professionFilter;
+          !professionFilter || String(item.profesionId) === professionFilter;
         const matchesMaritalStatus =
           !maritalStatusFilter ||
-          String(item.id_estado_civil) === maritalStatusFilter;
+          String(item.estadoCivilId) === maritalStatusFilter;
 
         return matchesSearch && matchesProfession && matchesMaritalStatus;
-      })
-      .sort((first, second) => {
-        if (!sort) return 0;
-
-        const firstValue = first[sort.key];
-        const secondValue = second[sort.key];
-        const comparison =
-          typeof firstValue === "number" && typeof secondValue === "number"
-            ? firstValue - secondValue
-            : String(firstValue).localeCompare(String(secondValue), "es", {
-              sensitivity: "base",
-            });
-
-        return sort.descending ? -comparison : comparison;
       });
-  }, [colaboradorData, maritalStatusFilter, professionFilter, search, sort]);
+  }, [colaboradorData, maritalStatusFilter, professionFilter, search]);
 
-  const sortedColumns = columns.map((column) => ({
-    ...column,
-    isSorted: sort?.key === column.key,
-    isSortedDescending:
-      sort?.key === column.key ? sort.descending : undefined,
-    showSortIconWhenUnsorted: true,
-  }));
+  const refreshData = async () => {
+    setIsRefreshing(true);
+    setLoadError("");
 
-  const handleColumnHeaderClick = (_event?: React.MouseEvent<HTMLElement>, column?: IColumn) => {
-    if (!column) return;
-
-    setSort((current) => ({
-      key: column.key as keyof Colaborador,
-      descending:
-        current?.key === column.key ? !current.descending : false,
-    }));
+    try {
+      const data = await ColaboradorService.obtenerTodos();
+      setColaboradorData(data);
+    } catch {
+      setLoadError("No fue posible actualizar los colaboradores.");
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleColumnDrop = ({ draggedIndex, targetIndex }: IColumnDragDropDetails) => {
@@ -165,10 +187,7 @@ export default function UserProfiles() {
   const renderRow: IRenderFunction<IDetailsRowProps> = (rowProps, defaultRender) => {
     if (!rowProps || !defaultRender) return null;
 
-    const professionHighlight =
-      rowProps.item.id_profesion === 1
-        ? "!bg-success-50 dark:!bg-success-500/15"
-        : "";
+    const ageColor = getAgeColorStatus((rowProps.item as Colaborador).edad);
 
     const enhancedRowProps = {
       ...rowProps,
@@ -176,18 +195,18 @@ export default function UserProfiles() {
         setSelectedRecord(rowProps.item as Colaborador);
         openModal();
       },
-      className: `${rowProps.className ?? ""} ${professionHighlight}`,
+      className: `${rowProps.className ?? ""} ${ageColor.rowClass}`,
     };
 
     return defaultRender(enhancedRowProps);
   };
 
-  const professionOptions = [...new Set(colaboradorData.map((item) => item.id_profesion))].sort(
-    (first, second) => first - second,
-  );
-  const maritalStatusOptions = [...new Set(colaboradorData.map((item) => item.id_estado_civil))].sort(
-    (first, second) => first - second,
-  );
+  const professionOptions = Array.from(
+    new Map(colaboradorData.map((item) => [item.profesionId, item.profesionNombre])),
+  ).sort(([firstId], [secondId]) => firstId - secondId);
+  const maritalStatusOptions = Array.from(
+    new Map(colaboradorData.map((item) => [item.estadoCivilId, item.estadoCivilNombre])),
+  ).sort(([firstId], [secondId]) => firstId - secondId);
 
   return (
     <>
@@ -197,9 +216,22 @@ export default function UserProfiles() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
             Grid de colaboradores
           </h3>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {filteredItems.length} de {colaboradorData.length} colaboradores
-          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {filteredItems.length} de {colaboradorData.length} colaboradores
+            </span>
+            <button
+              type="button"
+              onClick={refreshData}
+              disabled={isLoading || isRefreshing}
+              aria-label="Actualizar colaboradores"
+              title="Actualizar colaboradores"
+              className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-300 px-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5"
+            >
+              <RegenerateIcon className={`size-4 ${isRefreshing ? "animate-spin" : ""}`} />
+              {isRefreshing ? "Actualizando..." : "Actualizar"}
+            </button>
+          </div>
         </div>
         <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <label className="relative sm:col-span-2 xl:col-span-2">
@@ -221,9 +253,9 @@ export default function UserProfiles() {
               className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 shadow-theme-xs outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
             >
               <option value="">Todas las profesiones</option>
-              {professionOptions.map((profession) => (
-                <option key={profession} value={profession}>
-                  Profesión {profession}
+              {professionOptions.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
             </select>
@@ -236,32 +268,85 @@ export default function UserProfiles() {
               className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 shadow-theme-xs outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
             >
               <option value="">Todos los estados civiles</option>
-              {maritalStatusOptions.map((status) => (
-                <option key={status} value={status}>
-                  Estado civil {status}
+              {maritalStatusOptions.map(([id, name]) => (
+                <option key={id} value={id}>
+                  {name}
                 </option>
               ))}
             </select>
           </label>
         </div>
-        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
-          <DetailsList
-            className="min-w-[840px] [&_.ms-DetailsHeader]:bg-gray-50 [&_.ms-DetailsRow]:cursor-pointer dark:[&_.ms-DetailsHeader]:bg-gray-900"
-            items={filteredItems}
-            columns={sortedColumns}
-            selectionMode={SelectionMode.single}
-            layoutMode={DetailsListLayoutMode.fixedColumns}
-            isHeaderVisible
-            getKey={(item: Colaborador) => String(item.id_colaborador)}
-            onActiveItemChanged={(item?: Colaborador) => {
-              setSelectedRecord(item ?? null);
-            }}
-            onColumnHeaderClick={handleColumnHeaderClick}
-            columnReorderOptions={{ onColumnDrop: handleColumnDrop }}
-            onRenderRow={renderRow}
-            ariaLabelForGrid="Directorio de colaboradores"
-          />
-        </div>
+        <section
+          aria-labelledby="age-color-legend"
+          className="mb-5 border-y border-gray-200 py-4 dark:border-gray-800"
+        >
+          <h4
+            id="age-color-legend"
+            className="mb-3 text-sm font-semibold text-gray-800 dark:text-white/90"
+          >
+            Significado de los colores por edad
+          </h4>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="flex items-start gap-3">
+              <span className="mt-1 size-4 shrink-0 rounded-sm border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-900" />
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                <span className="block font-medium text-gray-800 dark:text-white/90">
+                  18 a 25 años: sin color
+                </span>
+                Fuera de peligro.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="mt-1 size-4 shrink-0 rounded-sm bg-warning-400" />
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                <span className="block font-medium text-gray-800 dark:text-white/90">
+                  26 a 50 años: amarillo
+                </span>
+                Tenga cuidado y tome todas las medidas de prevención.
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="mt-1 size-4 shrink-0 rounded-sm bg-error-500" />
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                <span className="block font-medium text-gray-800 dark:text-white/90">
+                  51 años o más: rojo
+                </span>
+                Por favor quédese en casa.
+              </p>
+            </div>
+          </div>
+        </section>
+        {isLoading ? (
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400" role="status">
+            Cargando colaboradores...
+          </p>
+        ) : loadError ? (
+          <p className="py-8 text-center text-sm text-error-600" role="alert">
+            {loadError}
+          </p>
+        ) : colaboradorData.length === 0 ? (
+          <p className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+            No hay colaboradores para mostrar.
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+            <DetailsList
+              className="min-w-[840px] [&_.ms-DetailsHeader]:bg-gray-50 [&_.ms-DetailsRow]:cursor-pointer dark:[&_.ms-DetailsHeader]:bg-gray-900"
+              items={filteredItems}
+              columns={columns}
+              selectionMode={SelectionMode.single}
+              layoutMode={DetailsListLayoutMode.fixedColumns}
+              isHeaderVisible
+              getKey={(item: Colaborador) => String(item.id)}
+              onActiveItemChanged={(item?: Colaborador) => {
+                setSelectedRecord(item ?? null);
+              }}
+              columnReorderOptions={{ onColumnDrop: handleColumnDrop }}
+              onRenderRow={renderRow}
+              ariaLabelForGrid="Directorio de colaboradores"
+            />
+          </div>
+        )}
       </div>
       <Modal
         isOpen={isOpen}
@@ -270,8 +355,23 @@ export default function UserProfiles() {
       >
         {selectedRecord && (
           <div>
+            {(() => {
+              const ageColor = getAgeColorStatus(selectedRecord.edad);
+              return (
+                <div
+                  className={`mb-5 rounded-lg border border-gray-200 p-4 dark:border-gray-700 ${ageColor.rowClass}`}
+                >
+                  <p className="text-sm font-semibold text-gray-800 dark:text-white/90">
+                    Clasificación: {ageColor.color === "none" ? "Sin color" : ageColor.color === "yellow" ? "Amarillo" : "Rojo"}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                    {selectedRecord.edad} años ({ageColor.range}). {ageColor.meaning}
+                  </p>
+                </div>
+              );
+            })()}
             <p className="mb-1 text-sm font-medium text-brand-500">
-              Colaborador #{selectedRecord.id_colaborador}
+              Colaborador #{selectedRecord.id}
             </p>
             <h2 className="mb-6 text-xl font-semibold text-gray-800 dark:text-white/90">
               {selectedRecord.nombre} {selectedRecord.apellido}
@@ -295,18 +395,18 @@ export default function UserProfiles() {
               </div>
               <div>
                 <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  ID profesión
+                  Profesión
                 </dt>
                 <dd className="mt-1 text-sm text-gray-800 dark:text-white/90">
-                  {selectedRecord.id_profesion}
+                  {selectedRecord.profesionNombre} (ID {selectedRecord.profesionId})
                 </dd>
               </div>
               <div>
                 <dt className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  ID estado civil
+                  Estado civil
                 </dt>
                 <dd className="mt-1 text-sm text-gray-800 dark:text-white/90">
-                  {selectedRecord.id_estado_civil}
+                  {selectedRecord.estadoCivilNombre} (ID {selectedRecord.estadoCivilId})
                 </dd>
               </div>
             </dl>

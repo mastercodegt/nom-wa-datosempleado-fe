@@ -1,19 +1,17 @@
 import { useSidebar } from "@/context/SidebarContext";
+import { AuthService } from "@/services";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import {
   BoxCubeIcon,
-  CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
   LogoutIcon,
-  PageIcon,
   PieChartIcon,
   PlugInIcon,
-  TableIcon,
   UserCircleIcon,
 } from "../icons";
 import { cn } from "../utils";
@@ -49,14 +47,31 @@ const navItems: NavItem[] = [
     path: "/Colaboradores",
   },
   {
-    name: "Forms",
-    key: "forms",
+    name: "Administración",
     icon: <ListIcon fontSize={24} />,
     subItems: [
       {
-        name: "Form Elements",
-        key: "formElements",
-        path: "/form-elements",
+        name: "Profesiones",
+        key: "profesiones",
+        path: "/profesiones",
+        pro: false,
+      },
+      {
+        name: "Estado civil",
+        key: "estadoCivil",
+        path: "/estado-civil",
+        pro: false,
+      },
+      {
+        name: "Roles",
+        key: "roles",
+        path: "/roles",
+        pro: false,
+      },
+      {
+        name: "Usuarios",
+        key: "usuarios",
+        path: "/usuarios",
         pro: false,
       },
     ],
@@ -399,7 +414,10 @@ const AppSidebar: React.FC = () => {
       <div className="mt-auto shrink-0 border-t border-gray-200 py-4 dark:border-gray-800">
         <button
           type="button"
-          onClick={() => navigate("/signin")}
+          onClick={() => {
+            AuthService.cerrarSesion();
+            navigate("/signin");
+          }}
           aria-label={t("userDropdown.signOut")}
           title={!isExpanded && !isHovered && !isMobileOpen ? t("userDropdown.signOut") : undefined}
           className={`group menu-item text-brand-600 transition-colors hover:bg-brand-50 hover:text-brand-700 dark:text-brand-400 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 ${!isExpanded && !isHovered && !isMobileOpen

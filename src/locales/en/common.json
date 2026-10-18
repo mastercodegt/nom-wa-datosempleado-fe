@@ -21,7 +21,7 @@
     },
     "items": {
       "dashboard": "Dashboard",
-      "ecommerceHome": "Ecommerce",
+      "ecommerceHome": "Dashboard",
       "analytics": "Analytics",
       "marketing": "Marketing",
       "crm": "CRM",
@@ -120,7 +120,13 @@
       "supportReply": "Ticket Reply",
       "email": "Email",
       "inbox": "Inbox",
-      "inboxDetails": "Details"
+      "inboxDetails": "Details",
+      "estadoCivil": "Estado civil",
+      "profesiones": "Profesiones",
+      "modulos": "Modulos",
+      "roles": "Roles",
+      "usuarios": "Usuarios",
+      "permisos": "Permisos"
     }
   },
   "header": {

@@ -4,6 +4,10 @@ import AppLayout from "./layout/AppLayout";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import Calendar from "./pages/Calendar";
+import EstadoCivil from "./pages/EstadoCivil";
+import Profesiones from "./pages/Profesiones";
+import Roles from "./pages/Roles";
+import Usuarios from "./pages/Usuarios";
 import BarChart from "./pages/Charts/BarChart";
 import LineChart from "./pages/Charts/LineChart";
 import Home from "./pages/Dashboard/Ecommerce";
@@ -31,6 +35,10 @@ export default function App() {
 
             {/* Others Page */}
             <Route path="/Colaboradores" element={<UserProfiles />} />
+            <Route path="/estado-civil" element={<EstadoCivil />} />
+            <Route path="/profesiones" element={<Profesiones />} />
+            <Route path="/roles" element={<Roles />} />
+            <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
 

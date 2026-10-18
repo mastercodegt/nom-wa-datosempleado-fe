@@ -20,6 +20,15 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://192.168.64.3:7080",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   build: {
     rolldownOptions: {
       onwarn(warning, warn) {
